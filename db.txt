@@ -1,0 +1,5 @@
+ip: 192.168.0.41
+
+id: postgres
+
+pw: 3W8EKGf4v77qr49lVf18
