@@ -445,7 +445,7 @@ async def import_movie_from_tmdb(
 ):
     """
     TMDB URL에서 영화/TV 시리즈 정보를 가져와 DB에 추가합니다.
-    URL 형식: 
+    URL 형식:
     - 영화: https://www.themoviedb.org/movie/{movie_id}
     - TV: https://www.themoviedb.org/tv/{tv_id}
     """
@@ -458,7 +458,7 @@ async def import_movie_from_tmdb(
     # Extract movie or TV ID from TMDB URL
     movie_match = re.search(r"/movie/(\d+)", request.tmdbUrl)
     tv_match = re.search(r"/tv/(\d+)", request.tmdbUrl)
-    
+
     if movie_match:
         content_type = "movie"
         content_id = movie_match.group(1)
@@ -500,7 +500,7 @@ async def import_movie_from_tmdb(
 
                 title = content_data.get("title", "")
                 release_date_str = content_data.get("release_date")
-                
+
             else:  # TV series
                 # Get TV series details
                 content_response = await client.get(
@@ -523,7 +523,7 @@ async def import_movie_from_tmdb(
                 creators = content_data.get("created_by", [])
                 if creators:
                     director = creators[0].get("name")
-                
+
                 # If no creator, try to get executive producer
                 if not director:
                     for crew in credits_data.get("crew", []):
@@ -531,15 +531,15 @@ async def import_movie_from_tmdb(
                             director = crew.get("name")
                             break
 
-                title = content_data.get("name", "")  # TV uses 'name' instead of 'title'
+                title = content_data.get(
+                    "name", ""
+                )  # TV uses 'name' instead of 'title'
                 release_date_str = content_data.get("first_air_date")
 
         # Build poster URL
         poster_url = None
         if content_data.get("poster_path"):
-            poster_url = (
-                f"https://media.themoviedb.org/t/p/original{content_data['poster_path']}"
-            )
+            poster_url = f"https://media.themoviedb.org/t/p/original{content_data['poster_path']}"
 
         # Extract genres
         genre_names = [genre["name"] for genre in content_data.get("genres", [])]
