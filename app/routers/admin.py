@@ -11,7 +11,7 @@ from app.models import User, Movie, Review, Genre, MovieGenre
 from app.dependencies import get_current_user
 from app.config import settings
 
-router = APIRouter(prefix="/api/admin", tags=["admin"])
+router = APIRouter(prefix="/admin", tags=["admin"])
 
 
 # ─────────────────────────────────────────────
@@ -20,8 +20,10 @@ router = APIRouter(prefix="/api/admin", tags=["admin"])
 class AdminUserResponse(BaseModel):
     uid: int
     name: str
+    nickname: str
     email: str
     img: Optional[str] = None
+    bio: Optional[str] = None
     gender: Optional[str] = None
     createdAt: datetime
     reviewCount: int = 0
@@ -47,7 +49,7 @@ class AdminMovieResponse(BaseModel):
 class AdminReviewResponse(BaseModel):
     rid: int
     userId: int
-    userName: str
+    userNickname: str
     movieId: int
     movieTitle: str
     title: Optional[str] = None
@@ -69,7 +71,9 @@ class DashboardStats(BaseModel):
 
 class UserUpdateRequest(BaseModel):
     name: Optional[str] = None
+    nickname: Optional[str] = None
     email: Optional[str] = None
+    bio: Optional[str] = None
     gender: Optional[str] = None
 
 
@@ -126,8 +130,10 @@ def get_dashboard_stats(
             AdminUserResponse(
                 uid=u.uid,
                 name=u.name,
+                nickname=u.nickname,
                 email=u.email,
                 img=u.img,
+                bio=u.bio,
                 gender=u.gender,
                 createdAt=u.created_at,
                 reviewCount=review_count,
@@ -149,7 +155,7 @@ def get_dashboard_stats(
             AdminReviewResponse(
                 rid=r.rid,
                 userId=u.uid,
-                userName=u.name,
+                userNickname=u.nickname,
                 movieId=m.mid,
                 movieTitle=m.title,
                 title=r.title,
@@ -190,8 +196,10 @@ def get_all_users(
             AdminUserResponse(
                 uid=u.uid,
                 name=u.name,
+                nickname=u.nickname,
                 email=u.email,
                 img=u.img,
+                bio=u.bio,
                 gender=u.gender,
                 createdAt=u.created_at,
                 reviewCount=review_count,
@@ -212,8 +220,10 @@ def get_user_detail(
     return AdminUserResponse(
         uid=user.uid,
         name=user.name,
+        nickname=user.nickname,
         email=user.email,
         img=user.img,
+        bio=user.bio,
         gender=user.gender,
         createdAt=user.created_at,
         reviewCount=review_count,
@@ -233,8 +243,12 @@ def update_user(
 
     if data.name is not None:
         user.name = data.name
+    if data.nickname is not None:
+        user.nickname = data.nickname
     if data.email is not None:
         user.email = data.email
+    if data.bio is not None:
+        user.bio = data.bio
     if data.gender is not None:
         user.gender = data.gender
 
@@ -409,7 +423,7 @@ def get_all_reviews(
             AdminReviewResponse(
                 rid=r.rid,
                 userId=u.uid,
-                userName=u.name,
+                userNickname=u.nickname,
                 movieId=m.mid,
                 movieTitle=m.title,
                 title=r.title,

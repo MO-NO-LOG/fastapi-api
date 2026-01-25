@@ -11,7 +11,9 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     password: str
     nickname: str
-    name: Optional[str] = None
+    name: str
+    gender: Optional[str] = None
+    bio: Optional[str] = None
 
 
 class UserLogin(UserBase):
@@ -22,7 +24,11 @@ class UserLogin(UserBase):
 class UserResponse(UserBase):
     uid: int
     name: str
+    nickname: str
     img: Optional[str] = None
+    bio: Optional[str] = None
+    gender: Optional[str] = None
+    is_admin: bool = False
     created_at: datetime
 
     class Config:
@@ -81,7 +87,39 @@ class ReviewListRequest(BaseModel):
     movieId: int
 
 
+# User Detail Schemas
+class UserDetailReviewItem(BaseModel):
+    reviewId: int
+    movieId: int
+    movieTitle: str
+    rating: Optional[float] = None
+    content: str
+    createdAt: datetime
+
+
+class UserDetailResponse(BaseModel):
+    userId: int
+    nickname: str
+    email: str
+    profileImage: Optional[str] = None
+    bio: Optional[str] = None
+    reviewCount: int
+    commentCount: int
+    joinedAt: datetime
+    reviews: List[UserDetailReviewItem] = []
+
+
 # Auth Token
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str
+
+
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

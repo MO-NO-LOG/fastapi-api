@@ -11,7 +11,7 @@ from app.schemas import (
 )
 from app.dependencies import get_current_user
 
-router = APIRouter(prefix="/api/reviews", tags=["reviews"])
+router = APIRouter(prefix="/reviews", tags=["reviews"])
 
 
 @router.post("/by-movie", response_model=ReviewListResponse)
@@ -25,10 +25,10 @@ def get_reviews_by_movie(req: ReviewListRequest, db: Session = Depends(get_db)):
 
     result = []
     for r in reviews:
-        # Fetch user nickname (r.user.name)
+        # Fetch user nickname (r.user.nickname)
         # Note: r.user might load lazily.
         # If user is None (shouldn't happen with FK constraint), handle gracefully.
-        nickname = r.user.name if r.user else "Unknown"
+        nickname = r.user.nickname if r.user else "Unknown"
 
         result.append(
             ReviewResponseItem(

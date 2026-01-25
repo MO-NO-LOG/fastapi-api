@@ -6,34 +6,34 @@ from app.models import Movie, MovieGenre, Genre
 from app.schemas import (
     MovieResponseItem,
     MovieDetailResponse,
-    MovieDetailRequest,
     MovieSearchResponse,
     MovieSearchRequest,
 )
 from typing import List
 
-router = APIRouter(prefix="/api/movies", tags=["movies"])
+router = APIRouter(prefix="/movies", tags=["movies"])
 
 
-@router.post("/search", response_model=MovieSearchResponse)
+@router.get("/search", response_model=MovieSearchResponse)
 def search_movies(
-    params: MovieSearchRequest,
+    keyword: str = "",
+    searchType: str = "TITLE",
     page: int = 0,
     size: int = 20,
     db: Session = Depends(get_db),
 ):
     query = db.query(Movie)
 
-    if params.keyword:
-        if params.searchType == "TITLE":
-            query = query.filter(Movie.title.ilike(f"%{params.keyword}%"))
-        elif params.searchType == "DIRECTOR":
-            query = query.filter(Movie.director.ilike(f"%{params.keyword}%"))
-        elif params.searchType == "GENRE":
+    if keyword:
+        if searchType == "TITLE":
+            query = query.filter(Movie.title.ilike(f"%{keyword}%"))
+        elif searchType == "DIRECTOR":
+            query = query.filter(Movie.director.ilike(f"%{keyword}%"))
+        elif searchType == "GENRE":
             query = (
                 query.join(MovieGenre)
                 .join(Genre)
-                .filter(Genre.name.ilike(f"%{params.keyword}%"))
+                .filter(Genre.name.ilike(f"%{keyword}%"))
             )
 
     total_count = query.count()
@@ -79,9 +79,9 @@ def get_trend_movies(db: Session = Depends(get_db)):
     return result
 
 
-@router.post("/detail", response_model=MovieDetailResponse)
-def get_movie_detail(req: MovieDetailRequest, db: Session = Depends(get_db)):
-    movie = db.query(Movie).filter(Movie.mid == req.movieId).first()
+@router.get("/detail/{movieId}", response_model=MovieDetailResponse)
+def get_movie_detail(movieId: int, db: Session = Depends(get_db)):
+    movie = db.query(Movie).filter(Movie.mid == movieId).first()
     if not movie:
         raise HTTPException(status_code=404, detail="Movie not found")
 

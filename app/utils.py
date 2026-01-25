@@ -1,6 +1,6 @@
 import bcrypt
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Tuple
+from typing import Optional
 from jose import jwt
 
 from app.config import settings
@@ -11,59 +11,36 @@ ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 
-def generate_salt() -> str:
+def verify_password(plain_password: str, hashed_password: str) -> bool:
     """
-    Generate a new random salt for password hashing.
-    Returns the salt as a string.
-    """
-    return bcrypt.gensalt(rounds=12).decode("utf-8")
-
-
-def verify_password(plain_password: str, hashed_password: str, salt: str) -> bool:
-    """
-    Verify a plain password against a hashed password using the provided salt.
+    Verify a plain password against a hashed password.
+    bcrypt includes salt in the hash, so no separate salt is needed.
 
     Args:
         plain_password: The plain text password
         hashed_password: The hashed password from database
-        salt: The salt from user_salt table
 
     Returns:
         True if password matches, False otherwise
     """
-    computed_hash = bcrypt.hashpw(
-        plain_password.encode("utf-8"), salt.encode("utf-8")
-    ).decode("utf-8")
-    return computed_hash == hashed_password
+    return bcrypt.checkpw(
+        plain_password.encode("utf-8"), hashed_password.encode("utf-8")
+    )
 
 
-def get_password_hash(password: str, salt: str) -> str:
+def get_password_hash(password: str) -> str:
     """
-    Hash a password using the provided salt.
+    Hash a password using bcrypt.
+    bcrypt automatically generates and includes salt in the hash.
 
     Args:
         password: The plain text password
-        salt: The salt string (from generate_salt() or database)
 
     Returns:
         The hashed password as a string
     """
-    return bcrypt.hashpw(password.encode("utf-8"), salt.encode("utf-8")).decode("utf-8")
-
-
-def create_password_hash_and_salt(password: str) -> Tuple[str, str]:
-    """
-    Generate both a salt and hash for a new password.
-
-    Args:
-        password: The plain text password
-
-    Returns:
-        Tuple of (hashed_password, salt)
-    """
-    salt = generate_salt()
-    hashed = get_password_hash(password, salt)
-    return hashed, salt
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -77,3 +54,44 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def create_refresh_token(data: dict, expires_delta: Optional[timedelta] = None):
+    """
+    Create a refresh token with longer expiration time.
+
+    Args:
+        data: Dictionary containing user data (e.g., {"sub": email})
+        expires_delta: Optional custom expiration time
+
+    Returns:
+        Encoded JWT refresh token
+    """
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(timezone.utc) + expires_delta
+    else:
+        from app.config import settings
+
+        expire = datetime.now(timezone.utc) + timedelta(
+            days=settings.REFRESH_TOKEN_EXPIRE_DAYS
+        )
+    to_encode.update({"exp": expire, "type": "refresh"})
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+
+def decode_token(token: str) -> dict:
+    """
+    Decode and validate JWT token.
+
+    Args:
+        token: JWT token string
+
+    Returns:
+        Decoded token payload
+
+    Raises:
+        JWTError: If token is invalid or expired
+    """
+    return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

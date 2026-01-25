@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "dev": "uv run uvicorn app.main:app --reload",
+    "format": "uvx ruff format",
+    "type": "uvx ty check "
+  }
+}

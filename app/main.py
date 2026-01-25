@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import auth, movies, reviews, admin
+from app.routers import auth, movies, reviews, admin, user
 
 # Create tables if not exists (redundant if init_db run, but safe)
 # Base.metadata.create_all(bind=engine)
@@ -23,10 +23,11 @@ app.add_middleware(
 )
 
 # Include Routers
-app.include_router(auth.router)
-app.include_router(movies.router)
-app.include_router(reviews.router)
-app.include_router(admin.router)
+app.include_router(auth.router, prefix="/api")
+app.include_router(movies.router, prefix="/api")
+app.include_router(reviews.router, prefix="/api")
+app.include_router(admin.router, prefix="/api")
+app.include_router(user.router, prefix="/api")
 
 
 @app.get("/")

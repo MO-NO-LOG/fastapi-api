@@ -20,35 +20,19 @@ class User(Base):
 
     uid = Column(Integer, primary_key=True, index=True)
     name = Column(String(50), nullable=False)
-    dec = Column(Text, nullable=True)
+    nickname = Column(String(50), unique=True, nullable=False, index=True)
     email = Column(String(100), unique=True, nullable=False, index=True)
-    password = Column(String(255), nullable=False)  # Hashed password (without salt)
-    img = Column(String(255), default="/images/default.png")
+    password = Column(String(255), nullable=False)
+    img = Column(String(255), default="default")
+    bio = Column(Text, nullable=True)
     gender = Column(
         CHAR(1), nullable=True
-    )  # Check constraint handled in DB or Pydantic
-    birth_date = Column(Date, nullable=True)
-    is_admin = Column(Boolean, default=False)  # 관리자 여부
+    )
+    is_admin = Column(Boolean, default=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     reviews = relationship("Review", back_populates="user")
     comments = relationship("Comment", back_populates="user")
-    salt = relationship(
-        "UserSalt", back_populates="user", uselist=False
-    )  # 1:1 relationship
-
-
-class UserSalt(Base):
-    __tablename__ = "user_salt"
-
-    uid = Column(Integer, ForeignKey("users.uid", ondelete="CASCADE"), primary_key=True)
-    salt = Column(String(255), nullable=False)  # bcrypt salt
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(
-        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
-    )
-
-    user = relationship("User", back_populates="salt")
 
 
 class Movie(Base):
