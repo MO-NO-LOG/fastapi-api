@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers import auth, movies, reviews, admin, user
 
+from app.database import engine, Base
+
+
 # Create tables if not exists (redundant if init_db run, but safe)
 # Base.metadata.create_all(bind=engine)
 

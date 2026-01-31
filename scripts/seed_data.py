@@ -2,14 +2,14 @@
 DB에 예시 데이터를 추가하는 스크립트
 
 Usage:
-    uv run python scripts/seed_data.py
+    python scripts/seed_data.py
 """
 
 import sys
 import os
 from datetime import date
 
-# Add the project root to the python path
+# 프로젝트 루트를 PYTHONPATH에 추가
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from sqlalchemy.orm import Session
@@ -27,8 +27,10 @@ from app.models import (
 from app.utils import get_password_hash
 
 
+# =========================
+# USERS
+# =========================
 def seed_users(db: Session):
-    """사용자 예시 데이터 추가"""
     print("Adding sample users...")
 
     users_data = [
@@ -46,7 +48,7 @@ def seed_users(db: Session):
             "name": "김영화",
             "nickname": "movie_lover",
             "email": "kim@example.com",
-            "password": get_password_hash("password123"),
+            "password": get_password_hash(" "),
             "img": "/images/user1.png",
             "bio": "영화를 사랑하는 평범한 직장인입니다.",
             "gender": "F",
@@ -85,8 +87,8 @@ def seed_users(db: Session):
     ]
 
     users = []
-    for user_data in users_data:
-        user = User(**user_data)
+    for data in users_data:
+        user = User(**data)
         db.add(user)
         users.append(user)
 
@@ -95,26 +97,16 @@ def seed_users(db: Session):
     return users
 
 
+# =========================
+# GENRES
+# =========================
 def seed_genres(db: Session):
-    """장르 예시 데이터 추가"""
     print("Adding sample genres...")
 
     genre_names = [
-        "액션",
-        "코미디",
-        "드라마",
-        "SF",
-        "스릴러",
-        "공포",
-        "로맨스",
-        "애니메이션",
-        "판타지",
-        "미스터리",
-        "범죄",
-        "모험",
-        "다큐멘터리",
-        "전쟁",
-        "뮤지컬",
+        "액션", "코미디", "드라마", "SF", "스릴러", "공포",
+        "로맨스", "애니메이션", "판타지", "미스터리",
+        "범죄", "모험", "다큐멘터리", "전쟁", "뮤지컬",
     ]
 
     genres = []
@@ -128,10 +120,13 @@ def seed_genres(db: Session):
     return genres
 
 
+# =========================
+# MOVIES (포스터 경로는 저장소 파일명에 정확히 맞춤)
+# =========================
 def seed_movies(db: Session, genres: list):
-    """영화 예시 데이터 추가"""
     print("Adding sample movies...")
 
+    # 주의: poster_url 값은 저장소의 실제 파일명(공백/온점/한글 포함)과 정확히 일치해야 합니다.
     movies_data = [
         {
             "title": "인셉션",
@@ -139,7 +134,7 @@ def seed_movies(db: Session, genres: list):
             "rat": 4.5,
             "release_date": date(2010, 7, 21),
             "director": "크리스토퍼 놀란",
-            "poster_url": "/images/inception.jpg",
+            "poster_url": "/images/posters/12. 인셉션.webp",
             "genre_names": ["SF", "액션", "스릴러"],
         },
         {
@@ -148,7 +143,7 @@ def seed_movies(db: Session, genres: list):
             "rat": 4.8,
             "release_date": date(2019, 5, 30),
             "director": "봉준호",
-            "poster_url": "/images/parasite.jpg",
+            "poster_url": "/images/posters/7. 기생충.webp",
             "genre_names": ["드라마", "스릴러", "코미디"],
         },
         {
@@ -157,17 +152,17 @@ def seed_movies(db: Session, genres: list):
             "rat": 4.6,
             "release_date": date(2014, 11, 6),
             "director": "크리스토퍼 놀란",
-            "poster_url": "/images/interstellar.jpg",
+            "poster_url": "/images/posters/13. 인터스텔라.webp",
             "genre_names": ["SF", "모험", "드라마"],
         },
         {
-            "title": "라라랜드",
-            "dec": "재즈 피아니스트와 배우 지망생이 꿈을 좇으며 사랑에 빠지는 이야기",
-            "rat": 4.3,
-            "release_date": date(2016, 12, 7),
-            "director": "데이미언 셔젤",
-            "poster_url": "/images/lalaland.jpg",
-            "genre_names": ["로맨스", "뮤지컬", "드라마"],
+            "title": "포레스트 검프",
+            "dec": "불편한 다리, 남들보다 조금 떨어지는 지능을 가진 외톨이 소년 포레스트 검프. 헌신적이고 강인한 어머니의 보살핌과 콩깍지 첫사랑 소녀 제니와의 만남으로 사회의 편견과 괴롭힘 속에서도 따뜻하고 순수한 마음을 지니고 성장한다. 여느 날과 같이 또래들의 괴롭힘을 피해 도망치던 포레스트는 누구보다 빠르게 달릴 수 있는 자신의 재능을 깨닫고 늘 달리는 삶을 살아간다. 포레스트의 재능을 발견한 대학에서 그를 미식축구 선수로 발탁하고, 졸업 후에도 뛰어난 신체능력으로 군에 들어가 누구도 예상치 못한 성과를 거둬 무공훈장을 수여받는 등 탄탄한 인생 가도에 오르게 된 포레스트. 하지만 영원히 행복할 것만 같았던 시간도 잠시, 어머니가 병에 걸려 죽음을 맞이하고 첫사랑 제니 역시 그의 곁을 떠나가며 다시 한번 인생의 전환점을 맞이하게 되는데… 과연, 포레스트는 진정한 삶의 행복을 발견할 수 있을까?",
+            "rat": 4.1,
+            "release_date": date(1994, 10, 15),
+            "director": "로버트 저메키스",
+            "poster_url": "/images/imgnum/34.webp",
+            "genre_names": ["멜로/로맨스", "서사/드라마", "코미디"],
         },
         {
             "title": "어벤져스: 엔드게임",
@@ -175,7 +170,7 @@ def seed_movies(db: Session, genres: list):
             "rat": 4.4,
             "release_date": date(2019, 4, 24),
             "director": "앤서니 루소, 조 루소",
-            "poster_url": "/images/endgame.jpg",
+            "poster_url": "/images/posters/10. 어벤져스 엔드게임.webp",
             "genre_names": ["액션", "SF", "모험"],
         },
         {
@@ -184,7 +179,7 @@ def seed_movies(db: Session, genres: list):
             "rat": 4.2,
             "release_date": date(2019, 10, 2),
             "director": "토드 필립스",
-            "poster_url": "/images/joker.jpg",
+            "poster_url": "/images/imgnum/47.webp",
             "genre_names": ["드라마", "스릴러", "범죄"],
         },
         {
@@ -193,7 +188,7 @@ def seed_movies(db: Session, genres: list):
             "rat": 4.7,
             "release_date": date(2001, 7, 20),
             "director": "미야자키 하야오",
-            "poster_url": "/images/spirited_away.jpg",
+            "poster_url": "/images/posters/5. 센과 치히로의 행방불명.webp",
             "genre_names": ["애니메이션", "판타지", "모험"],
         },
         {
@@ -202,7 +197,7 @@ def seed_movies(db: Session, genres: list):
             "rat": 4.6,
             "release_date": date(2008, 7, 18),
             "director": "크리스토퍼 놀란",
-            "poster_url": "/images/dark_knight.jpg",
+            "poster_url": "/images/imgnum/28.webp",
             "genre_names": ["액션", "범죄", "드라마"],
         },
         {
@@ -211,35 +206,32 @@ def seed_movies(db: Session, genres: list):
             "rat": 4.9,
             "release_date": date(1994, 9, 23),
             "director": "프랭크 다라본트",
-            "poster_url": "/images/shawshank.jpg",
+            "poster_url": "/images/imgnum/40.webp",
             "genre_names": ["드라마"],
         },
         {
-            "title": "펄프 픽션",
-            "dec": "로스앤젤레스의 범죄자들의 얽히고설킨 이야기를 독특한 구성으로 풀어낸 작품",
-            "rat": 4.4,
-            "release_date": date(1994, 10, 14),
-            "director": "퀜틴 타란티노",
-            "poster_url": "/images/pulp_fiction.jpg",
-            "genre_names": ["범죄", "드라마"],
+            "title": "아바타: 불과 재",
+            "dec": "인간들과의 전쟁으로 첫째 아들 ‘네테이얌’을 잃은 후, ‘제이크’와 ‘네이티리’는 깊은 슬픔에 빠진다. 상실에 빠진 이들 앞에 '바랑'이 이끄는 재의 부족이 등장하면서, 판도라는 더욱 큰 위험에 빠지게 되고, ‘설리’ 가족은 선택의 기로에 서게 되는데...",
+            "rat": 3.5,
+            "release_date": date(2025, 12, 17),
+            "director": "제임스 카메론",
+            "poster_url": "/images/imgnum/32.webp",
+            "genre_names": ["SF", "액션", "어드벤처"],
         },
     ]
 
-    # 장르 이름으로 장르 객체를 찾기 위한 딕셔너리
     genre_dict = {g.name: g for g in genres}
 
     movies = []
-    for movie_data in movies_data:
-        genre_names = movie_data.pop("genre_names")
-        movie = Movie(**movie_data)
+    for data in movies_data:
+        genre_names = data.pop("genre_names")
+        movie = Movie(**data)
         db.add(movie)
-        db.flush()  # mid를 얻기 위해 flush
+        db.flush()
 
-        # 영화-장르 관계 추가
-        for genre_name in genre_names:
-            if genre_name in genre_dict:
-                movie_genre = MovieGenre(mid=movie.mid, gid=genre_dict[genre_name].gid)
-                db.add(movie_genre)
+        for gname in genre_names:
+            if gname in genre_dict:
+                db.add(MovieGenre(mid=movie.mid, gid=genre_dict[gname].gid))
 
         movies.append(movie)
 
@@ -248,8 +240,10 @@ def seed_movies(db: Session, genres: list):
     return movies
 
 
+# =========================
+# REVIEWS / COMMENTS / LIKES (간단 샘플 — 원하면 더 추가)
+# =========================
 def seed_reviews(db: Session, users: list, movies: list):
-    """리뷰 예시 데이터 추가"""
     print("Adding sample reviews...")
 
     reviews_data = [
@@ -257,95 +251,23 @@ def seed_reviews(db: Session, users: list, movies: list):
             "user_idx": 1,  # movie_lover
             "movie_idx": 0,  # 인셉션
             "title": "꿈과 현실의 경계를 허무는 걸작",
-            "dec": "크리스토퍼 놀란의 상상력이 빛나는 작품입니다. 복잡한 구조임에도 불구하고 긴장감을 유지하며 관객을 끝까지 몰입시킵니다. 영상미와 음악, 연기 모든 면에서 완성도가 높습니다.",
+            "dec": "크리스토퍼 놀란의 상상력이 빛나는 작품입니다. 복잡한 구조임에도 불구하고 긴장감을 유지합니다.",
             "rat": 5.0,
         },
         {
-            "user_idx": 2,  # reviewer_park
-            "movie_idx": 1,  # 기생충
+            "user_idx": 2,
+            "movie_idx": 1,
             "title": "한국 영화의 자랑스러운 걸작",
-            "dec": "계급 사회를 날카롭게 비판하면서도 재미를 잃지 않는 봉준호 감독의 연출이 돋보입니다. 배우들의 연기도 훌륭하고, 반전의 연속으로 긴장감이 넘칩니다.",
-            "rat": 5.0,
-        },
-        {
-            "user_idx": 3,  # cinema_lee
-            "movie_idx": 2,  # 인터스텔라
-            "title": "우주를 배경으로 한 감동적인 부녀애",
-            "dec": "과학적 고증과 감성적인 스토리가 조화를 이루는 작품입니다. 우주의 광활함과 인간의 작은 사랑이 대비되면서 큰 감동을 선사합니다. 한스 짐머의 음악도 일품입니다.",
-            "rat": 4.5,
-        },
-        {
-            "user_idx": 1,  # movie_lover
-            "movie_idx": 3,  # 라라랜드
-            "title": "아름다운 음악과 영상의 향연",
-            "dec": "재즈와 뮤지컬이 어우러진 화려한 영상미가 인상적입니다. 꿈을 좇는 두 사람의 이야기가 현실적이면서도 낭만적으로 그려집니다. 엔딩은 여운이 깊게 남습니다.",
-            "rat": 4.0,
-        },
-        {
-            "user_idx": 4,  # film_choi
-            "movie_idx": 4,  # 어벤져스: 엔드게임
-            "title": "마블 시네마틱 유니버스의 완벽한 피날레",
-            "dec": "10년간 쌓아온 마블 영화들의 대단원입니다. 팬서비스가 넘치면서도 감동적인 순간들이 많아 만족스러웠습니다. 액션 장면도 화려하고 웅장합니다.",
-            "rat": 4.5,
-        },
-        {
-            "user_idx": 2,  # reviewer_park
-            "movie_idx": 5,  # 조커
-            "title": "호아킨 피닉스의 소름 돋는 연기",
-            "dec": "악당의 기원을 다룬 작품 중 가장 인상적입니다. 호아킨 피닉스의 연기는 압도적이며, 사회의 어두운 면을 날카롭게 포착합니다. 불편하지만 강렬한 영화입니다.",
-            "rat": 4.0,
-        },
-        {
-            "user_idx": 3,  # cinema_lee
-            "movie_idx": 6,  # 센과 치히로의 행방불명
-            "title": "지브리의 최고 걸작",
-            "dec": "어른이 되어 다시 봐도 감동적인 작품입니다. 아름다운 그림과 깊이 있는 스토리, 인상적인 캐릭터들이 어우러져 완벽한 애니메이션을 만들어냅니다.",
-            "rat": 5.0,
-        },
-        {
-            "user_idx": 4,  # film_choi
-            "movie_idx": 7,  # 다크 나이트
-            "title": "히어로 영화의 새로운 기준",
-            "dec": "단순한 히어로물을 넘어 범죄 스릴러로서도 훌륭합니다. 히스 레저의 조커 연기는 전설적이며, 배트맨과의 대결 구도가 긴장감 넘칩니다.",
-            "rat": 4.5,
-        },
-        {
-            "user_idx": 1,  # movie_lover
-            "movie_idx": 8,  # 쇼생크 탈출
-            "title": "희망에 대한 영화",
-            "dec": "절망적인 상황에서도 희망을 잃지 않는 주인공의 이야기가 가슴 깊이 와닿습니다. 완벽한 각본과 연기, 연출이 조화를 이룬 명작입니다.",
-            "rat": 5.0,
-        },
-        {
-            "user_idx": 2,  # reviewer_park
-            "movie_idx": 9,  # 펄프 픽션
-            "title": "타란티노의 천재성이 빛나는 작품",
-            "dec": "비선형적 구조가 신선하고, 대사 하나하나가 인상적입니다. 폭력적이지만 유머러스하고, 독특한 매력이 가득한 영화입니다.",
-            "rat": 4.5,
-        },
-        {
-            "user_idx": 3,  # cinema_lee
-            "movie_idx": 0,  # 인셉션
-            "title": "몇 번을 봐도 새로운 영화",
-            "dec": "볼 때마다 새로운 디테일을 발견하게 되는 영화입니다. 꿈의 층위를 넘나드는 구조가 복잡하지만 명확하게 전달됩니다.",
-            "rat": 4.5,
-        },
-        {
-            "user_idx": 4,  # film_choi
-            "movie_idx": 1,  # 기생충
-            "title": "영화 제작 관점에서도 배울 점이 많은 작품",
-            "dec": "모든 장면이 의미를 가지고 있으며, 복선과 상징이 정교하게 배치되어 있습니다. 영화를 공부하는 입장에서 매우 유익한 작품입니다.",
+            "dec": "봉준호 감독의 연출이 돋보입니다.",
             "rat": 5.0,
         },
     ]
 
     reviews = []
-    for review_data in reviews_data:
-        user_idx = review_data.pop("user_idx")
-        movie_idx = review_data.pop("movie_idx")
-        review = Review(
-            uid=users[user_idx].uid, mid=movies[movie_idx].mid, **review_data
-        )
+    for r in reviews_data:
+        user_idx = r.pop("user_idx")
+        movie_idx = r.pop("movie_idx")
+        review = Review(uid=users[user_idx].uid, mid=movies[movie_idx].mid, **r)
         db.add(review)
         reviews.append(review)
 
@@ -355,69 +277,18 @@ def seed_reviews(db: Session, users: list, movies: list):
 
 
 def seed_comments(db: Session, users: list, reviews: list):
-    """댓글 예시 데이터 추가"""
     print("Adding sample comments...")
 
     comments_data = [
-        {
-            "review_idx": 0,
-            "user_idx": 2,
-            "dec": "정말 공감되는 리뷰네요! 저도 이 영화 정말 좋아합니다.",
-        },
-        {
-            "review_idx": 0,
-            "user_idx": 3,
-            "dec": "꿈의 층위를 설명하는 부분이 정말 인상적이었죠.",
-        },
-        {
-            "review_idx": 1,
-            "user_idx": 1,
-            "dec": "기생충은 정말 볼 때마다 새로운 것 같아요.",
-        },
-        {
-            "review_idx": 2,
-            "user_idx": 4,
-            "dec": "한스 짐머 음악 정말 최고죠! 영화와 완벽하게 어울립니다.",
-        },
-        {
-            "review_idx": 3,
-            "user_idx": 2,
-            "dec": "엔딩 장면에서 정말 울었어요 ㅠㅠ",
-        },
-        {
-            "review_idx": 4,
-            "user_idx": 3,
-            "dec": "아이언맨 팬으로서 너무 감동적이었습니다.",
-        },
-        {
-            "review_idx": 5,
-            "user_idx": 1,
-            "dec": "호아킨 피닉스 연기 정말 소름 돋았어요.",
-        },
-        {
-            "review_idx": 6,
-            "user_idx": 2,
-            "dec": "어렸을 때 봤던 기억이 나서 다시 봤는데 여전히 좋네요.",
-        },
-        {
-            "review_idx": 7,
-            "user_idx": 1,
-            "dec": "히스 레저의 조커를 잊을 수가 없어요.",
-        },
-        {
-            "review_idx": 8,
-            "user_idx": 3,
-            "dec": "이 영화는 정말 명작 중의 명작입니다.",
-        },
+        {"review_idx": 0, "user_idx": 2, "dec": "정말 공감되는 리뷰네요!"},
+        {"review_idx": 1, "user_idx": 1, "dec": "정말 훌륭한 작품이에요."},
     ]
 
     comments = []
-    for comment_data in comments_data:
-        review_idx = comment_data.pop("review_idx")
-        user_idx = comment_data.pop("user_idx")
-        comment = Comment(
-            rid=reviews[review_idx].rid, uid=users[user_idx].uid, **comment_data
-        )
+    for c in comments_data:
+        review_idx = c.pop("review_idx")
+        user_idx = c.pop("user_idx")
+        comment = Comment(rid=reviews[review_idx].rid, uid=users[user_idx].uid, **c)
         db.add(comment)
         comments.append(comment)
 
@@ -427,75 +298,29 @@ def seed_comments(db: Session, users: list, reviews: list):
 
 
 def seed_likes(db: Session, users: list, reviews: list, comments: list):
-    """좋아요 예시 데이터 추가"""
     print("Adding sample likes...")
 
-    # 리뷰 좋아요
-    review_likes_data = [
-        {"review_idx": 0, "user_idx": 2, "type": "L"},
-        {"review_idx": 0, "user_idx": 3, "type": "L"},
-        {"review_idx": 0, "user_idx": 4, "type": "L"},
-        {"review_idx": 1, "user_idx": 1, "type": "L"},
-        {"review_idx": 1, "user_idx": 3, "type": "L"},
-        {"review_idx": 2, "user_idx": 1, "type": "L"},
-        {"review_idx": 2, "user_idx": 2, "type": "L"},
-        {"review_idx": 3, "user_idx": 2, "type": "L"},
-        {"review_idx": 4, "user_idx": 1, "type": "L"},
-        {"review_idx": 5, "user_idx": 3, "type": "L"},
-        {"review_idx": 6, "user_idx": 1, "type": "L"},
-        {"review_idx": 6, "user_idx": 4, "type": "L"},
-        {"review_idx": 7, "user_idx": 2, "type": "L"},
-        {"review_idx": 8, "user_idx": 2, "type": "L"},
-        {"review_idx": 8, "user_idx": 4, "type": "L"},
-    ]
+    # 아주 간단 샘플
+    review_like = ReviewLike(rid=reviews[0].rid, uid=users[2].uid, type="L")
+    db.add(review_like)
 
-    review_likes = []
-    for like_data in review_likes_data:
-        review_idx = like_data.pop("review_idx")
-        user_idx = like_data.pop("user_idx")
-        like = ReviewLike(
-            rid=reviews[review_idx].rid, uid=users[user_idx].uid, **like_data
-        )
-        db.add(like)
-        review_likes.append(like)
-
-    # 댓글 좋아요
-    comment_likes_data = [
-        {"comment_idx": 0, "user_idx": 1, "type": "L"},
-        {"comment_idx": 1, "user_idx": 1, "type": "L"},
-        {"comment_idx": 2, "user_idx": 2, "type": "L"},
-        {"comment_idx": 3, "user_idx": 3, "type": "L"},
-        {"comment_idx": 4, "user_idx": 1, "type": "L"},
-        {"comment_idx": 5, "user_idx": 2, "type": "L"},
-        {"comment_idx": 6, "user_idx": 2, "type": "L"},
-        {"comment_idx": 7, "user_idx": 3, "type": "L"},
-    ]
-
-    comment_likes = []
-    for like_data in comment_likes_data:
-        comment_idx = like_data.pop("comment_idx")
-        user_idx = like_data.pop("user_idx")
-        like = CommentLike(
-            cid=comments[comment_idx].cid, uid=users[user_idx].uid, **like_data
-        )
-        db.add(like)
-        comment_likes.append(like)
+    comment_like = CommentLike(cid=comments[0].cid, uid=users[1].uid, type="L")
+    db.add(comment_like)
 
     db.commit()
-    print(
-        f"✓ Added {len(review_likes)} review likes and {len(comment_likes)} comment likes"
-    )
+    print("✓ Added sample likes")
 
 
+# =========================
+# MAIN
+# =========================
 def seed_all():
-    """모든 예시 데이터를 추가하는 메인 함수"""
     print("=" * 50)
-    print("Starting to seed database with sample data...")
+    print("Starting DB seeding...")
     print("=" * 50)
 
     db = SessionLocal()
     try:
-        # 데이터 추가 순서: 의존성이 없는 것부터
         users = seed_users(db)
         genres = seed_genres(db)
         movies = seed_movies(db, genres)
@@ -504,7 +329,7 @@ def seed_all():
         seed_likes(db, users, reviews, comments)
 
         print("=" * 50)
-        print("✅ Database seeding completed successfully!")
+        print("✅ Seeding completed successfully!")
         print("=" * 50)
         print("\n샘플 로그인 정보:")
         print("  관리자: admin@mono-log.com / admin1234")
